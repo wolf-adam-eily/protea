@@ -178,6 +178,13 @@ Largest monoexonic gene:        4955
 Smallest monoexonic gene:	74
 </pre>
 
+The monoexonics amino acid fasta was run through the checking software with the following results:
+<pre style="color: silver; background: black;">
+Double Partials		5p Partials		3p Partials	 		Complete Genes	 	Total
+83			37			113				6099			6332</pre>
+
+The double partials were removed. We see agreement.
+
 MULTIEXONICS:
 <pre style="color: silver; background: black;">
 module load perl/5.24.0
@@ -228,4 +235,14 @@ Average number of introns per gene: 4.235
 Median number of introns per gene:  3
 Largest intron: 60462
 Smallest intron:        42</pre>
+
+The multiexonics amino acid fasta was run through the checking software with the following results:
+<pre style="color: silver; background: black;">
+Double Partials		5p Partials		3p Partials	 	Complete Genes	 	Total
+147			63			179			16917			17306</pre>
+
+The double partials were removed. We see agreement.
+
+The multiexonic and monoexonic checked faa's and gtfs were combined into `all_genes.faa` and `all_genes.gtf` at the location:
+`/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/all_genes`
 
