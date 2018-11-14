@@ -8,7 +8,7 @@
 <li><a href="#Third_Point_Header">3 Quality control using sickle</a></li>
 <li><a href="#Fourth_Point_Header">4 Aligning reads to a genome using hisat2</a></li>
 <li><a href="#Fifth_Point_Header">5 Predicting gene models with BRAKER</a></li>
-<li><a href="#Sixth_Point_Header">6 Pairwise differential expression with counts in R with DESeq2</a></li>
+<li><a href="#Sixth_Point_Header">6 Quality control of gene models using gfacs</a></li>
 	<ol><li><a href="#types_of_plots">1 Common plots for differential expression analysis</a></li>
 		<li><a href="#using_deseq2">2 Using DESeq2</a></li></ol>
 <li><a href="#EnTAP">7 EnTAP: Functional Annotation for Genomes</a></li>
@@ -73,6 +73,25 @@ hisat2 -x protea_index -1 trimmed_output_RIV21_UCBdata_allforward.fastq -2 trimm
 
 The singles were omitted from the rest of the analysis.
 
+The statistics of the alignment are:
+<pre style="color: silver; background: black;">
+119285404 reads; of these:
+  119285404 (100.00%) were paired; of these:
+    48394548 (40.57%) aligned concordantly 0 times
+    69075616 (57.91%) aligned concordantly exactly 1 time
+    1815240 (1.52%) aligned concordantly >1 times
+    ----
+    48394548 pairs aligned concordantly 0 times; of these:
+      1673017 (3.46%) aligned discordantly 1 time
+    ----
+    46721531 pairs aligned 0 times concordantly or discordantly; of these:
+      93443062 mates make up the pairs; of these:
+        70385893 (75.32%) aligned 0 times
+        22302298 (23.87%) aligned exactly 1 time
+        754871 (0.81%) aligned >1 times
+70.50% overall alignment rate
+</pre>
+
 The aligned reads are located at: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/indexing_and_alignment/alignment/RIV21_UCBdata_all.sam`.
 
 Next, the aligned reads were sorted with the following code:
@@ -109,3 +128,104 @@ Of note are a few particular files from the output:
 The predicted amino acid sequences of the models: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gene_modeling_with_BRAKER/braker/protea/augustus.hints.aa`
 
 The corresponding gff3 file to the predicted AA sequences: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gene_modeling_with_BRAKER/braker/protea/augustus.hints.aa`
+
+There were 35896 predicted amino acid sequences determined via: `grep -c ">" augustus.hints.aa`.
+
+However, there were only 33270 genes predicted, determined via: `grep -c "gene" augustus.hints.gff3`.
+
+This implies that a few genes have multiple isoforms.
+
+<h2 id="Sixth_Point_Header">Quality control of gene models using gfacs</h2>
+
+The gene models were quality checked using gfacs. There were no flags used to eliminate any partials, including double partials, as the quality control thresholds for the partials are the same to the completes save for the actual partials flags (`--remove-without-start-codon`, `--remove-without-stop-codon`). For better statistics, the gene models were split into multi-exonic and mono-exonic groups using gfacs (with the flags `--remove-multiexonics`, `--remove-monoexonics` on two separate runs). Therefore, no gene appears in both sets and a combination of the two sets compiles all passing gene models. After each gfacs run, the amino acid fasta was run through checking software (included in this github) to separate the models into four categories: double partials, 5p partials, 3p partials, and completes. The double partials were then removed.
+
+MONOEXONICS:
+<pre style="color: silver; background: black;">
+module load perl/5.24.0
+cd /UCHC/LABS/Wegrzyn/gFACs/
+perl gFACs.pl \
+-f braker_2.05_gff3 \
+--statistics \
+--statistics-at-every-step \
+-p mono \
+--splice-rescue \
+--unique-genes-only \
+--rem-start-introns \
+--rem-end-introns \
+--splice-table \
+--min-exon-size 20 \
+--min-intron-size 20 \
+--rem-multiexonics \
+--get-fasta-without-introns \
+--get-fasta-with-introns \
+--create-gtf \
+--get-protein-fasta \
+--fasta /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/masked_genome/genome.masked.filtered.fa \
+-O /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/mono_exonics/ \
+/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gene_modeling_with_BRAKER/braker/protea/augustus.hints.gff3</pre>
+
+The results are at `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/mono_exonics/`.
+
+Here are some statistics (from `*statistics.txt`:
+<pre style="color: silver; background: black;">
+Number of genes:        6332
+Number of positive strand genes:        3210
+Number of negative strand genes:        3122
+
+Average size of mono-exonic genes:	657.741
+Median size of mono-exonic genes:	432
+Largest monoexonic gene:        4955
+Smallest monoexonic gene:	74
+</pre>
+
+MULTIEXONICS:
+<pre style="color: silver; background: black;">
+module load perl/5.24.0
+cd /UCHC/LABS/Wegrzyn/gFACs/
+perl gFACs.pl \
+-f braker_2.05_gff3 \
+--statistics \
+--statistics-at-every-step \
+-p multi \
+--splice-rescue \
+--unique-genes-only \
+--rem-start-introns \
+--rem-end-introns \
+--splice-table \
+--min-exon-size 20 \
+--min-intron-size 20 \
+--rem-monoexonics \
+--get-fasta-without-introns \
+--get-fasta-with-introns \
+--create-gtf \
+--get-protein-fasta \
+--fasta /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/masked_genome/genome.masked.filtered.fa \
+-O /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/multi_exonics/ \
+/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gene_modeling_with_BRAKER/braker/protea/augustus.hints.gff3</pre>
+
+The results are at: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/multi_exonics/ `
+
+Here are some statistics (from `*statistics.txt`):
+<pre style="color: silver; background: black;">
+Number of genes:        17306
+Number of positive strand genes:        8579
+Number of negative strand genes:        8727
+
+Average overall gene size:	6212.739
+Median overall gene size:	3397
+Average overall CDS size:	1067.629
+Median overall CDS size:        834
+Average overall exon size:	203.940
+Median overall exon size:	124
+
+Average number of exons per gene:   5.235
+Median number of exons per gene:    4
+Largest exon:	8028
+Smallest exon:	20
+Most exons in one gene: 47
+
+Average number of introns per gene: 4.235
+Median number of introns per gene:  3
+Largest intron: 60462
+Smallest intron:        42</pre>
+
