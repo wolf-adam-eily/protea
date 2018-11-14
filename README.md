@@ -9,11 +9,7 @@
 <li><a href="#Fourth_Point_Header">4 Aligning reads to a genome using hisat2</a></li>
 <li><a href="#Fifth_Point_Header">5 Predicting gene models with BRAKER</a></li>
 <li><a href="#Sixth_Point_Header">6 Quality control of gene models using gfacs</a></li>
-	<ol><li><a href="#types_of_plots">1 Common plots for differential expression analysis</a></li>
-		<li><a href="#using_deseq2">2 Using DESeq2</a></li></ol>
-<li><a href="#EnTAP">7 EnTAP: Functional Annotation for Genomes</a></li>
- <li><a href="#Integration">8 Integrating the DE Results with the Annotation Results</a></li>
-<li><a href="#Citation">Citations</a></li>
+	<li><a href="#Seventh_Point_Header">7 Functional annotation using EnTAP</a></li>
 </ul>
 </div>
 
@@ -244,5 +240,9 @@ Double Partials		5p Partials		3p Partials	 	Complete Genes	 	Total
 The double partials were removed. We see agreement.
 
 The multiexonic and monoexonic checked faa's and gtfs were combined into `all_genes.faa` and `all_genes.gtf` at the location:
-`/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/all_genes`
+`/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/all_genes`.
+
+<h2 id="Seventh_Point_Header">Functional annotation using EnTAP</h2>
+
+The surviving and unique gene models were then annotated using EnTAP with the following code:
 
