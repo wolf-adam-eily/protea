@@ -179,7 +179,7 @@ The monoexonics amino acid fasta was run through the checking software with the 
 Double Partials		5p Partials		3p Partials	 		Complete Genes	 	Total
 83			37			113				6099			6332</pre>
 
-The double partials were removed. We see agreement.
+Only the complete genes were taken from this sample. We see agreement.
 
 MULTIEXONICS:
 <pre style="color: silver; background: black;">
@@ -241,6 +241,49 @@ The double partials were removed. We see agreement.
 
 The multiexonic and monoexonic checked faa's and gtfs were combined into `all_genes.faa` and `all_genes.gtf` at the location:
 `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/all_genes`.
+
+Our final table is as follows:
+<pre style="color: silver; background: black;">
+WITH_MONO_EXONICS_PARTIALS
+
+5p Partials		3p Partials		Complete Genes		Total
+100			292			23016			23408
+
+WITHOUT_MONO_EXONICS_PARTIALS
+all_genes.faa
+
+5p Partials		3p Partials		Complete Genes		Total
+63			179			23016			23258</pre>
+
+For reference, the complete BRAKER output (`/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gene_modeling_with_BRAKER/braker/protea/augustus.hints.aa`) was run through the checking script. Because the checking script requires `*` as a stop codon to determine partials and `augustus.hints.aa` does not contain stop codons, the following code was executed to re-write `augustus.hints.aa` with stop codons:
+<pre style="color: silver; background: black;">
+cd /UCHC/LABS/Wegrzyn/gFACs/
+perl gFACs.pl -f braker_2.05_gff3 \
+--statistics \
+--splice-rescue \ 
+--get-protein-fasta \
+--fasta \UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/masked_genome/genome.masked.filtered.fa \
+-O /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/braker_out/ \
+/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gene_modeling_with_BRAKER/braker/protea/augustus.hints.gff3</pre>
+
+The final `faa` is located at `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/braker_out/genes_without_introns.fasta.faa`.
+
+This fasta was run through the checking software to yield the following statistics:
+<pre style="color: silver; background: black;">
+WITH_DOUBLES
+
+Double Partials		5p Partials	3p Partials	Complete Genes	 	Total
+2882			1797		3019		28196			35894
+
+WITHOUT_DOUBLES
+
+5p Partials	3p Partials	Complete Genes		Total
+1797		3019		28196			33012
+
+NUMBER_OF_REMOVED_GENES_WITH_GFACS
+
+5p Partials	3p Partials	Complete Genes		Total
+1734		2840		5180			9754</pre>
 
 <h2 id="Seventh_Point_Header">Functional annotation using EnTAP</h2>
 
