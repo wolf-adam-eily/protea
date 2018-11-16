@@ -15,6 +15,7 @@
 		<li><a href="#combined">Integrated statistics for i & ii</a></li>
 		<li><a href="#taxonomics">Taxonomic breakdown of EnTAP run</a></li></ol>
 <li><a href="#Eighth_Point_Header">8 Further statistical breakdown of EnTAP output</a></li>
+	<li><a href="#Ninth_Point_Header">9 Final GTF check</a></li>
 </ul>
 </div>
 
@@ -465,4 +466,63 @@ Here is a flow of the statistics through the annotation process:
 <strong>PERCENT_DECREASE_THROUGH_ANNOTATION</strong>
 <pre style="color: silver; background: black;">
 5p Partials	3p Partials	Complete Genes	Total
-0.979		0.952		0.394		0.477
+0.979		0.952		0.394		0.477</pre>
+
+<h2 id="Ninth_Point_Header">Final GTF check</h2>
+Before creating the `HISAT2` index, the final gtf (`/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/out.gtf`) was compared to the <strong>BRAKER_OUTPUT --> gFACs</strong> (`UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/all_genes/all_genes.gtf`) using the following code:
+
+`bedtools intersect -s -v -a out.gtf -b all_genes.gtf >> check.gtf`
+
+The output is located at: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/gtf_comparisons/`
+
+The command above will print all features in `out.gtf` which have different coordinates in `out.gtf` and `all_genes.gtf`, with strandedness a requirement. We see from:
+
+<pre style="color: silver; background: black;">
+head check.gtf
+
+</pre>
+
+That there are no features in `out.gtf` which have different coordinates in `out.gtf` and `all_genes.gtf`.
+
+The `HISAT2` index is going to be built using the introns and exons of `out.gtf`. Intron and exon only gtfs were created with the following code (in `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants`):
+
+<pre style="color: silver; background: black;">
+grep "intron" out.gtf | cut -f1,4,5,7 >> introns
+grep "CDS" out.gtf | cut -f1,4,5,7 >> exons  
+</pre>
+
+The `introns` and `exons` files were then moved to `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/hisat2_index`.
+
+In the `hisat2_index` the following command was run to build the index:
+
+<pre style="color: silver; background: black;">
+module load hisat2
+hisat2-build -p 8 --ss introns --exon exons ../masked_genome/genome.masked.filtered.fa protea_index</pre>
+
+Lastly, all of the information was checked:
+
+<pre style="color: silver; background: black;">
+module load hisat2
+hisat2-inspect -s protea_index
+<strong>Num. Splice Sites: 42393
+Num. Exons: 78250</strong>
+
+wc -l exons
+<strong>78488 exons</strong>
+
+wc -l introns
+<strong>61231 introns</strong></pre>
+
+We see a disagreement. Let's investigate the introns. First, let's find all introns in `introns` not in the index:
+
+<pre style="color: silver; background: black;">
+awk 'NR==FNR{array[$0];next} !($0 in array){print $0}' hisat2_introns introns >> not_in
+
+head not_in
+<strong>scaffold121490	2547	4325	+</strong>
+
+grep "scaffold121490" exons
+<strong>scaffold121490	2105	2546	+
+scaffold121490	4326	5260	+</strong></pre>
+
+Here we see what has happened. Introns which 
