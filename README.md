@@ -14,6 +14,7 @@
 		<li><a href="#plantfaa">Statistics from ref-seq plant faa 87 database search</a></li>
 		<li><a href="#combined">Integrated statistics for i & ii</a></li>
 		<li><a href="#taxonomics">Taxonomic breakdown of EnTAP run</a></li></ol>
+<li><a href="#Eighth_Point_Header">8 Further statistical breakdown of EnTAP output</a></li>
 </ul>
 </div>
 
@@ -393,3 +394,5 @@ Top 10 Taxonomic Scopes Assigned:
         5)Bacteria: 3(0.02%)
         6)Fungi: 1(0.01%)
 </pre>
+
+<h2 id="Eighth_Point_Header">Further statistical breakdown of EnTAP output</h2>
