@@ -356,7 +356,7 @@ And here are the statistics for the ref-seq plant protein 87 database in the tax
                         10)Citrus clementina: 193(1.61%)
 </pre>
 
-<h2 id="integrated">Integrated statistics from uniprot and ref-seq searches</h2>
+<h2 id="combined">Integrated statistics from uniprot and ref-seq searches</h2>
 Here are the statistics integrating both of the previous two searches:
 <pre style="color: silver; background: black;">
     Flagged contaminants (all % based on total contaminants):
