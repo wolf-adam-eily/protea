@@ -396,3 +396,66 @@ Top 10 Taxonomic Scopes Assigned:
 </pre>
 
 <h2 id="Eighth_Point_Header">Further statistical breakdown of EnTAP output</h2>
+
+As there are only five contaminants, they are not included in the rest of the analysis. 
+
+The non-contaminant alignments were extracted by combining the non-contaminant csv's first. This was done in the directory `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/functional_annotation_with_EnTAP/entap_out/`:
+
+<pre style="color: silver; background: black;">
+cat *no_contam*tsv >> no_contaminants.tsv</pre>
+
+After this, `gFACs` was run with the `--entap-annotations` and `--annotated-all-genes-only` flags in the following script:
+
+<pre style="color: silver; background: black;">
+module load perl/5.24.0
+cd /UCHC/LABS/Wegrzyn/gFACs/
+perl gFACs.pl -f braker_2.05_gff3 \
+--statistics \
+--splice-rescue \
+--entap-annotation /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/functional_annotation_with_EnTAP/entap_out/no_contaminants.tsv \
+--annotated-all-genes-only \
+--get-protein-fasta \
+--fasta /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/masked_genome/genome.masked.filtered.fa \
+-O /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/ \
+/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gene_modeling_with_BRAKER/braker/protea/augustus.hints.gff3
+</pre>
+
+The output is in `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants`.
+
+Next, the checking software was run on `genes_without_introns.fasta.faa` in `entap_no_contaminants`. The following statistics were determined:
+
+<pre style="color: silver; background: black;">
+5p Partials	3p Partials	Complete Genes	Total
+37		144		17076		17257</pre>
+
+Here is a flow of the statistics through the annotation process:
+
+<pre style="color: silver; background: black;">
+BRAKER_OUTPUT
+/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gene_modeling_with_BRAKER/braker/protea/augustus.hints.aa
+
+5p Partials	3p Partials	Complete Genes		Total
+1797		3019		28196			33012
+</pre>
+
+<pre style="color: silver; background: black;">
+TRIMMED_BRAKER_OUTPUT_FROM_GFACS
+/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/all_genes/all_genes.faa
+
+5p Partials		3p Partials		Complete Genes		Total
+63			179			23016			23258
+</pre>
+
+<pre style="color: silver; background: black;">
+TRIMMED_BRAKER_OUTPUT_FROM_GFACS --> EnTAP --> ANNOTATED_GENES_ONLY_NO_CONTAMINANTS --> gFACs
+/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/genes_without_introns.fasta.faa
+
+5p Partials	3p Partials	Complete Genes	Total
+37		144		17076		17257
+</pre>
+
+<pre style="color: silver; background: black;">
+TOTAL_GENE_MODELS_REMOVED_THROUGH_ANNOTATION
+
+5p Partials	3p Partials	Complete Genes	Total
+37		144		17076		17257
