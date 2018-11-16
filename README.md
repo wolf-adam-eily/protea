@@ -430,32 +430,38 @@ Next, the checking software was run on `genes_without_introns.fasta.faa` in `ent
 
 Here is a flow of the statistics through the annotation process:
 
+<strong>BRAKER_OUTPUT</strong>
 <pre style="color: silver; background: black;">
-BRAKER_OUTPUT
 /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gene_modeling_with_BRAKER/braker/protea/augustus.hints.aa
 
 5p Partials	3p Partials	Complete Genes		Total
 1797		3019		28196			33012
 </pre>
 
+<strong>TRIMMED_BRAKER_OUTPUT_FROM_GFACS</strong>
 <pre style="color: silver; background: black;">
-TRIMMED_BRAKER_OUTPUT_FROM_GFACS
 /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/all_genes/all_genes.faa
 
 5p Partials		3p Partials		Complete Genes		Total
 63			179			23016			23258
 </pre>
 
+
+<strong>TRIMMED_BRAKER_OUTPUT_FROM_GFACS --> EnTAP --> ANNOTATED_GENES_ONLY_NO_CONTAMINANTS --> gFACs</strong>
 <pre style="color: silver; background: black;">
-TRIMMED_BRAKER_OUTPUT_FROM_GFACS --> EnTAP --> ANNOTATED_GENES_ONLY_NO_CONTAMINANTS --> gFACs
 /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/genes_without_introns.fasta.faa
 
 5p Partials	3p Partials	Complete Genes	Total
 37		144		17076		17257
 </pre>
 
+<strong>TOTAL_GENE_MODELS_REMOVED_THROUGH_ANNOTATION</strong>
 <pre style="color: silver; background: black;">
-TOTAL_GENE_MODELS_REMOVED_THROUGH_ANNOTATION
-
+/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/genes_without_introns.fasta.faa
 5p Partials	3p Partials	Complete Genes	Total
-37		144		17076		17257
+1760		2875		11120		15755</pre>
+
+<strong>PERCENT_DECREASE_THROUGH_ANNOTATION</strong>
+<pre style="color: silver; background: black;">
+5p Partials	3p Partials	Complete Genes	Total
+0.979		0.952		0.394		0.477
