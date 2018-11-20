@@ -521,3 +521,22 @@ scaffold193932	GFACS	CDS	67656	67997	0.18	-	.	g31213.t1	scaffold193932	GFACS	int
 scaffold36178	GFACS	CDS	9982	10167	0.51	-	.	g29143.t1	scaffold36178	GFACS	intron	10153	16942	1	-	.	.	14
 scaffold5113	GFACS	CDS	11436	12026	0.97	+	.	g23104.t1	scaffold5113	GFACS	intron	7440	13074	1	+	.	.	590
 </strong></pre>
+
+Let's see if any of these overlaps occur in nested models. To determine if there are any nested models we first use `bedtools merge` to collapse our gtf into the gene models:
+
+<pre style="color: silver; background: black;">bedtools merge -s -i out.ordered.gtf -c 2,7,9 -o distinct,distinct,distinct >> merged.out.gtf
+head merged.out.gtf
+<strong>C67174424	61	2723	GFACS	-	.,g32988,g32988.t1
+C67174986	967	1439	GFACS	-	.,g29054,g29054.t1
+C67175022	263	2282	GFACS	-	.,g27556,g27556.t1
+C67175416	710	1988	GFACS	+	.,g10622,g10622.t1
+C67175522	359	1961	GFACS	+	.,g11052,g11052.t1
+C67177288	820	3024	GFACS	+	.,g33243,g33243.t1
+C67177542	1088	1580	GFACS	-	.,g19881,g19881.t1
+C67178404	542	2757	GFACS	-	.,g23770,g23770.t1
+C67178796	492	2142	GFACS	-	.,g1325,g1325.t1
+C67179430	56	2864	GFACS	+	.,g24443,g24443.t1
+</strong>
+
+wc -l merged.out.gtf
+<strong>17251</strong>
