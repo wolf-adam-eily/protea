@@ -540,3 +540,107 @@ C67179430	56	2864	GFACS	+	.,g24443,g24443.t1
 
 wc -l merged.out.gtf
 <strong>17251</strong>
+
+grep -c "gene" merged.out.gtf
+<strong>17257</strong></pre>
+
+We already that six genes have been lost in the merge. To identify these lost genes the last column was split into two columns with:
+
+<pre style="color: silver; background: black;">head merged.out.gtf
+<strong>C67174424	61	2723	GFACS	-	.,g32988,g32988.t1
+C67174986	967	1439	GFACS	-	.,g29054,g29054.t1
+C67175022	263	2282	GFACS	-	.,g27556,g27556.t1
+C67175416	710	1988	GFACS	+	.,g10622,g10622.t1
+C67175522	359	1961	GFACS	+	.,g11052,g11052.t1
+C67177288	820	3024	GFACS	+	.,g33243,g33243.t1
+C67177542	1088	1580	GFACS	-	.,g19881,g19881.t1
+C67178404	542	2757	GFACS	-	.,g23770,g23770.t1
+C67178796	492	2142	GFACS	-	.,g1325,g1325.t1
+C67179430	56	2864	GFACS	+	.,g24443,g24443.t1</strong>
+
+sed -i 's/\.\,//g' merged.out.gtf
+sed -i 's/\.t1//g' merged.out.gtf
+sed -i 's/\,/        /g' merged.out.gtf
+column -t merged.out.gtf >> formatted.merged.out.gtf
+head formatted.merged.out.gtf 
+<strong>C67174424                      61      2723    GFACS  -  g32988  g32988
+C67174986                      967     1439    GFACS  -  g29054  g29054
+C67175022                      263     2282    GFACS  -  g27556  g27556
+C67175416                      710     1988    GFACS  +  g10622  g10622
+C67175522                      359     1961    GFACS  +  g11052  g11052
+C67177288                      820     3024    GFACS  +  g33243  g33243
+C67177542                      1088    1580    GFACS  -  g19881  g19881
+C67178404                      542     2757    GFACS  -  g23770  g23770
+C67178796                      492     2142    GFACS  -  g1325   g1325
+C67179430                      56      2864    GFACS  +  g24443  g24443</strong>
+
+awk -F"\t" '$6 != $7 { print $0 }' formatted.merged.out.gtf
+</pre>
+
+No genes were collapsed together based on this. But to make sure, the following code was executed:
+<pre style="color: silver; background: black;">
+bedtools merge -s -i out.ordered.gtf -c 3,7,9 -o collapse,distinct,distinct >> merged.out.gtf.copy
+sed -i 's/CDS//g' *copy
+sed -i 's/intron//g' *copy
+sed -i 's/start_codon//g' *copy
+sed -i 's/stop_codon//g' *copy
+head *copy
+<strong>C67174424	61	2723	,,gene,,,,,,,,,,,	-	.,g32988,g32988.t1
+C67174986	967	1439	,,gene,,,	-	.,g29054,g29054.t1
+C67175022	263	2282	,,gene,,,,,	-	.,g27556,g27556.t1
+C67175416	710	1988	,,gene,	+	.,g10622,g10622.t1
+C67175522	359	1961	,,gene,	+	.,g11052,g11052.t1
+C67177288	820	3024	,,gene,,	+	.,g33243,g33243.t1
+C67177542	1088	1580	,,gene,,,,,	-	.,g19881,g19881.t1
+C67178404	542	2757	,,gene,,,,,	-	.,g23770,g23770.t1
+C67178796	492	2142	,,gene,,,,,	-	.,g1325,g1325.t1
+C67179430	56	2864	,,gene,,,	+	.,g24443,g24443.t1
+</strong>
+sed -i 's/\,//g' *copy
+grep "genegene" *copy
+<strong>scaffold121444	10355	11838	genegene	-	.g14240g14240.t1g14241g14241.t1
+scaffold148870	714	6690	genegene	+	.g24790g24790.t1g24792g24792.t1
+scaffold193932	67294	70638	genegene	-	.g31212g31212.t1g31213g31213.t1
+scaffold36178	4431	23074	genegene	-	.g29143g29143.t1g29144g29144.t1
+scaffold44960	9707	18008	genegene	+	.g31619g31619.t1g31620g31620.t1
+scaffold5113	6708	31552	genegene	+	.g23103g23103.t1g23104g23104.t1</strong></pre>
+
+This is why we always second check! We see that there are some genes which were combined, and the result is _four_ gene names combined together. Because of this, when we split the table earlier the result for the first row would have been 
+
+<pre style="color: silver; background: black;">
+scaffold121444	10355	11838	genegene	-	g14240	g14240	g14241	g14241</pre>
+
+This row would have 9 columns, and when we check if columns 6 and 7 are equal these particular rows would pass. However, we see that genes 14241 and 14240 are actually one gene nested inside of another. Therefore, the genes which are nested together are:
+
+<pre style="color: silver; background: black;">g14240
+g14241
+g24790
+g24792
+g29143
+g29144
+g31619
+g31620
+g23103
+g23104</pre>
+
+We want to remove these genes from both the fasta and the gtf. Let's remove them from the gtf first:
+
+<pre style="color: silver; background: black;">grep -vwE "(g14240|g14241|g24790|g24792|g29143|g29144|g31619|g31620|g23103|g23104)" out.ordered.gtf >> nested_genes_removed.gtf</pre>
+
+And re-do our steps:
+<pre style="color: silver; background: black;">bedtools merge -s -i nested_genes_removed.gtf -c 3,7,9 -o distinct,distinct,distinct >> merged_nested_genes_removed.gtf
+
+wc -l merged_nested_genes_removed.gtf 
+<strong>17308 merged_nested_genes_removed.gtf</strong>
+grep -c "gene" nested_genes_removed.gtf 
+<strong>17247</strong>
+grep -c "gene" merged_nested_genes_removed.gtf 
+<strong>17246</strong></pre>
+
+Any merged features which did not represent a gene were removed:
+
+<pre style="color: silver; background: black;">grep "gene" merged_nested_genes_removed.gtf >> merged_nested_genes_removed.genes
+wc -l merged*genes
+17246 merged_nested_genes_removed.genes</strong>
+
+The numbers check out. Our final gtf is `nested_genes_removed.gtf`.
