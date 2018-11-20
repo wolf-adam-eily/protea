@@ -469,7 +469,7 @@ Here is a flow of the statistics through the annotation process:
 0.979		0.952		0.394		0.477</pre>
 
 <h2 id="Ninth_Point_Header">Final GTF check</h2>
-Before creating the `HISAT2` index, the final gtf (`/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/out.gtf`) was compared to the <strong>BRAKER_OUTPUT --> gFACs</strong> (`UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/all_genes/all_genes.gtf`) using the following code:
+Before creating the `HISAT2` index, the final gtf ( `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/out.gtf` ) was compared to the <strong>BRAKER_OUTPUT --> gFACs</strong> ( `UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/all_genes/all_genes.gtf` ) using the following code:
 
 `bedtools intersect -s -v -a out.gtf -b all_genes.gtf >> check.gtf`
 
@@ -484,45 +484,40 @@ head check.gtf
 
 That there are no features in `out.gtf` which have different coordinates in `out.gtf` and `all_genes.gtf`.
 
-The `HISAT2` index is going to be built using the introns and exons of `out.gtf`. Intron and exon only gtfs were created with the following code (in `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants`):
+Let's now see if there are any exons and introns which are overlapping. First, we need to isolate the exons and introns into separate files:
 
-<pre style="color: silver; background: black;">
-grep "intron" out.gtf | cut -f1,4,5,7 >> introns
-grep "CDS" out.gtf | cut -f1,4,5,7 >> exons  
-</pre>
+<pre style="color: silver; background: black;">sort -k1,1 -k4,4n -k5,5n -k7,7 out.gtf >> ordered.out.gtf
+grep "CDS" ordered.out.gtf >> exons
+grep "intron" ordered.out.gtf >> introns
+sort -k1,1 -k4,4n -k5,5n -k7,7 exons >> exons.ordered
+sort -k1,1 -k4,4n -k5,5n -k7,7 introns >> introns.ordered</pre>
 
-The `introns` and `exons` files were then moved to `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/hisat2_index`.
+After this, the two files were compared using the `bedtools overlap` function with a window size of `0`:
 
-In the `hisat2_index` the following command was run to build the index:
+<pre style="color: silver; background: black;">windowBed -a exons.ordered -b introns.ordered -w 0 | bedtools overlap -i stdin -cols 4,5,13,14
+<strong>scaffold129144	GFACS	CDS	84431	84492	0.63	+	.	g16205.t1	scaffold129144	GFACS	intron	83426	90950	1	-	.	.	61
+scaffold129144	GFACS	CDS	85080	85174	0.86	+	.	g16205.t1	scaffold129144	GFACS	intron	83426	90950	1	-	.	.	94
+scaffold129144	GFACS	CDS	85252	85649	0.89	+	.	g16205.t1	scaffold129144	GFACS	intron	83426	90950	1	-	.	.	397
+scaffold147195	GFACS	CDS	25997	26063	0.87	+	.	g23384.t1	scaffold147195	GFACS	intron	24781	36276	1	-	.	.	66
+scaffold147195	GFACS	CDS	26179	26450	0.89	+	.	g23384.t1	scaffold147195	GFACS	intron	24781	36276	1	-	.	.	271
+scaffold148095	GFACS	CDS	28928	29239	0.97	-	.	g16614.t1	scaffold148095	GFACS	intron	7114	30682	1	+	.	.	311
+scaffold148870	GFACS	CDS	5954	6010	0.88	+	.	g24792.t1	scaffold148870	GFACS	intron	5726	6534	0.53	+	.	.	56
+scaffold148870	GFACS	CDS	6154	6285	1	+	.	g24792.t1	scaffold148870	GFACS	intron	5726	6534	0.53	+	.	.	131
+scaffold169703	GFACS	CDS	63854	63992	1	-	.	g31111.t1	scaffold169703	GFACS	intron	62155	64182	1	+	.	.	138
+scaffold169703	GFACS	CDS	64183	64251	0.92	+	.	g31110.t1	scaffold169703	GFACS	intron	63993	65499	1	-	.	.	68
+scaffold177559	GFACS	CDS	39689	40318	0.99	-	.	g9338.t1	scaffold177559	GFACS	intron	38101	44840	1	+	.	.	629
+scaffold188205	GFACS	CDS	39535	39867	0.46	-	.	g11059.t1	scaffold188205	GFACS	intron	36556	42966	1	+	.	.	332
+scaffold193932	GFACS	CDS	67656	67997	0.18	-	.	g31213.t1	scaffold193932	GFACS	intron	67638	68481	0.45	-	.	.	341
+scaffold34067	GFACS	CDS	69355	69623	0.77	-	.	g25544.t1	scaffold34067	GFACS	intron	61354	70850	1	+	.	.	268
+scaffold34067	GFACS	CDS	69888	70035	0.79	-	.	g25544.t1	scaffold34067	GFACS	intron	61354	70850	1	+	.	.	147
+scaffold36178	GFACS	CDS	9982	10167	0.51	-	.	g29143.t1	scaffold36178	GFACS	intron	10153	16942	1	-	.	.	14
+scaffold5113	GFACS	CDS	11436	12026	0.97	+	.	g23104.t1	scaffold5113	GFACS	intron	7440	13074	1	+	.	.	590
+</strong></pre>
 
-<pre style="color: silver; background: black;">
-module load hisat2
-hisat2-build -p 8 --ss introns --exon exons ../masked_genome/genome.masked.filtered.fa protea_index</pre>
-
-Lastly, all of the information was checked:
-
-<pre style="color: silver; background: black;">
-module load hisat2
-hisat2-inspect -s protea_index
-<strong>Num. Splice Sites: 42393
-Num. Exons: 78250</strong>
-
-wc -l exons
-<strong>78488 exons</strong>
-
-wc -l introns
-<strong>61231 introns</strong></pre>
-
-We see a disagreement. Let's investigate the introns. First, let's find all introns in `introns` not in the index:
-
-<pre style="color: silver; background: black;">
-awk 'NR==FNR{array[$0];next} !($0 in array){print $0}' hisat2_introns introns >> not_in
-
-head not_in
-<strong>scaffold121490	2547	4325	+</strong>
-
-grep "scaffold121490" exons
-<strong>scaffold121490	2105	2546	+
-scaffold121490	4326	5260	+</strong></pre>
-
-Here we see what has happened. Introns which 
+Because strandedness was not considered, we grab columns which are on the same strand:
+<pre style="color: silver; background: black;"><strong>scaffold148870	GFACS	CDS	5954	6010	0.88	+	.	g24792.t1	scaffold148870	GFACS	intron	5726	6534	0.53	+	.	.	56
+scaffold148870	GFACS	CDS	6154	6285	1	+	.	g24792.t1	scaffold148870	GFACS	intron	5726	6534	0.53	+	.	.	131
+scaffold193932	GFACS	CDS	67656	67997	0.18	-	.	g31213.t1	scaffold193932	GFACS	intron	67638	68481	0.45	-	.	.	341
+scaffold36178	GFACS	CDS	9982	10167	0.51	-	.	g29143.t1	scaffold36178	GFACS	intron	10153	16942	1	-	.	.	14
+scaffold5113	GFACS	CDS	11436	12026	0.97	+	.	g23104.t1	scaffold5113	GFACS	intron	7440	13074	1	+	.	.	590
+</strong></pre>
