@@ -16,6 +16,7 @@
 		<li><a href="#taxonomics">Taxonomic breakdown of EnTAP run</a></li></ol>
 <li><a href="#Eighth_Point_Header">8 Further statistical breakdown of EnTAP output</a></li>
 	<li><a href="#Ninth_Point_Header">9 Final GTF check</a></li>
+	<li><a href="#Tenth_Point_Header">10 Final checks and finished analysis files
 </ul>
 </div>
 
@@ -699,5 +700,63 @@ grep -c ">" genes_without_introns_or_nests.fasta.faa
 grep -c "gene" nested_genes_removed.gtf
 <strong>17247</strong></pre>
 
+<h2 id="Tenth_Point_Header">Final checks and finished analyis files</h2>
 
+Let's check `nested_genes_removed.gtf` and `genes_without_introns_or_nests.fasta.faa`. To do this, we need to arrange `nested_genes_removed.gtf` in the same order the scaffolds appear in the masked genome and run the newly arranged `gtf` through gFACs. First, we make a subdirectory: `mkdir /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/check`. Next, we create the properly arrangeed gtf in the directory `entap_no_contaminants`:
 
+<pre style="color: silver; background: black;">awk 'NR==FNR{array[$0];next}$0 in array{print $0}' no_nested_genes_gfacs.gtf out.gtf >> gfacs_formatted.gtf
+head gfacs_formatted.gtf
+<strong>scaffold322564	GFACS	gene	6207	6524	1	+	.	g1
+scaffold322564	GFACS	start_codon	6207	6209	.	+	.	.
+scaffold322564	GFACS	stop_codon	6522	6524	.	+	.	.
+scaffold322564	GFACS	CDS	6207	6524	1	+	.	g1.t1
+scaffold121490	GFACS	gene	2105	5260	0.59	+	.	g2
+scaffold121490	GFACS	start_codon	2105	2107	.	+	.	.
+scaffold121490	GFACS	stop_codon	5258	5260	.	+	.	.
+scaffold121490	GFACS	CDS	2105	2546	0.69	+	.	g2.t1
+scaffold121490	GFACS	CDS	4326	5260	0.88	+	.	g2.t1
+scaffold121490	GFACS	intron	2547	4325	1	+	.	.</strong>
+
+head out.gtf
+<strong>scaffold322564	GFACS	gene	6207	6524	1	+	.	g1
+scaffold322564	GFACS	start_codon	6207	6209	.	+	.	.
+scaffold322564	GFACS	stop_codon	6522	6524	.	+	.	.
+scaffold322564	GFACS	CDS	6207	6524	1	+	.	g1.t1
+scaffold121490	GFACS	gene	2105	5260	0.59	+	.	g2
+scaffold121490	GFACS	start_codon	2105	2107	.	+	.	.
+scaffold121490	GFACS	stop_codon	5258	5260	.	+	.	.
+scaffold121490	GFACS	CDS	2105	2546	0.69	+	.	g2.t1
+scaffold121490	GFACS	CDS	4326	5260	0.88	+	.	g2.t1
+scaffold121490	GFACS	intron	2547	4325	1	+	.	.</strong></pre>
+
+Great. Now we run the following code to create the `gFACs` generated `fasta.faa`, `fasta`, `gtf` files:
+<pre style="color: silver; background: black;">module load perl/5.24.0
+cd /UCHC/LABS/Wegrzyn/gFACs/
+perl gFACs.pl -f gFACs_gtf \
+--statistics \
+--splice-rescue \
+--get-protein-fasta \
+--get-fasta-without-introns \
+--fasta /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/masked_genome/genome.masked.filtered.fa \
+-O /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/check/ \
+/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/gfacs_formatted.gtf</pre>
+
+<pre style="color: silver; background: black;">cd check
+ls
+genes_without_introns.fasta  genes_without_introns.fasta.faa  gene_table.txt  gFACs_log.txt  statistics.txt</pre>
+
+Let's check the amino acid fasta. Because each sequence is made up of two lines, a header and the amino acid sequence, respectively, we use `awk` with a record separator `>` so that we are checking to see if each line tandem in one fasta matches a line tandem in the other fasta:
+
+<pre style="color: silver; background: black;">wc -l genes_without_introns.fasta
+<strong>34495 genes_without_introns.fasta</strong>
+wc -l genes_without_introns.fasta.faa
+<strong>34495 genes_without_introns.fasta.fa</strong>
+
+awk -v RS=">" 'NR==FNR{array[$0];next}$0 in array{print $0}' genes_without_introns.fasta ../genes_without_introns_or_nests.fasta.faa >> aa_fasta_check
+wc -l aa_fasta_check
+<strong>2</strong>
+head aa_fasta_check
+
+</pre>
+
+Great. The amino acid sequences are robust.
