@@ -691,4 +691,12 @@ diff sorted_genes_without_introns_or_nests.check sorted_genes_without_introns_or
 
 The fasta passes the check. The final fasta file is located at: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/genes_without_introns_or_nests.fasta.faa`.
 
+Lastly:
+<pre style="color: silver; background: black;">
+grep -c ">" genes_without_introns_or_nests.fasta.faa
+<strong>17247</strong>
+grep -c "gene" nested_genes_removed.gtf
+<strong>17247</strong></pre>
+
+
 
