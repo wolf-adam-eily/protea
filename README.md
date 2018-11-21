@@ -646,7 +646,7 @@ wc -l merged*genes
 The numbers check out. Our final gtf is `nested_genes_removed.gtf`.
 
 The last step in our `GTF` check is to make sure that there are no merged modules which are multiple introns, exons, or both concatenated (that is, to make sure we aren't actually missing what could be a gene):
-
+<pre style="color: silver; background: black;">
 grep -v "gene" merged_nested_genes_removed.gtf >> non_gene_modules
 head non_gene_modules
 <strong>scaffold121444	10355	10358	stop_codon	-	.
@@ -658,7 +658,7 @@ scaffold148870	714	717	start_codon	+	.
 scaffold148870	777	5154	intron	+	.
 scaffold148870	5327	5696	intron	+	.
 scaffold148870	5725	6534	intron,start_codon	+	.
-scaffold148870	6623	6626	stop_codon	+	.</strong>
+scaffold148870	6623	6626	stop_codon	+	.</strong></pre>
 
 grep "intron" non_gene_modules >> non_gene_introns
 wc -l non_gene_introns
