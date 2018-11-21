@@ -673,7 +673,7 @@ wc -l non_gene_exons
 
 Lastly, we need to remove the genes from the fasta. We place our nested gene ids into the file `nested_list`. Next, we use `awk` to retrieve the sequences, and `grep` to check that the actual protein sequences do not appear in any other genes:
 
-<pre style="color: silver; background: black;">id='(cat nested_list)'
+<pre style="color: silver; background: black;">id=$(cat nested_list)
 for gene in $id; 
 do awk '/'$gene'/{flag=1;print $0;next}/^>/{flag=0}flag' genes_without_introns.fasta.faa >> no_nested_gene_models.fasta ;
 done;
