@@ -641,6 +641,54 @@ Any merged features which did not represent a gene were removed:
 
 <pre style="color: silver; background: black;">grep "gene" merged_nested_genes_removed.gtf >> merged_nested_genes_removed.genes
 wc -l merged*genes
-17246 merged_nested_genes_removed.genes</strong>
+17246 merged_nested_genes_removed.genes</strong></pre>
 
 The numbers check out. Our final gtf is `nested_genes_removed.gtf`.
+
+The last step in our `GTF` check is to make sure that there are no merged modules which are multiple introns, exons, or both concatenated (that is, to make sure we aren't actually missing what could be a gene):
+
+grep -v "gene" merged_nested_genes_removed.gtf >> non_gene_modules
+head non_gene_modules
+<strong>scaffold121444	10355	10358	stop_codon	-	.
+scaffold121444	10672	10675	stop_codon	-	.
+scaffold121444	10775	10778	start_codon	-	.
+scaffold121444	11167	11679	intron	-	.
+scaffold121444	11835	11838	start_codon	-	.
+scaffold148870	714	717	start_codon	+	.
+scaffold148870	777	5154	intron	+	.
+scaffold148870	5327	5696	intron	+	.
+scaffold148870	5725	6534	intron,start_codon	+	.
+scaffold148870	6623	6626	stop_codon	+	.</strong>
+
+grep "intron" non_gene_modules >> non_gene_introns
+wc -l non_gene_introns
+46 non_gene_introns
+nano non_gene_introns
+
+<strong>OUTPUT OMITTED, NO POSSIBLE GENE MODULES IN OUTPUT</strong>
+
+grep "CDS" non_gene_modules >> non_gene_exons
+wc -l non_gene_exons
+<strong>0 non_gene_exons</strong></pre>
+
+Lastly, we need to remove the genes from the fasta. We place our nested gene ids into the file `nested_list`. Next, we use `awk` to retrieve the sequences, and `grep` to check that the actual protein sequences do not appear in any other genes:
+
+<pre style="color: silver; background: black;">for gene in $id; 
+do awk '/'$gene'/{flag=1;print $0;next}/^>/{flag=0}flag' genes_without_introns.fasta.faa >> no_nested_gene_models.fasta ;
+done;
+cat no_nested_gene_models.fasta | xargs -Ivar grep var genes_without_introns.fasta.faa >> no_nested_gene_models.check;
+diff no_nested_gene_models.fasta no_nested_gene_models.check</pre>
+
+After determining the protein sequences were unique, they were removed from the fasta and checked to ensure that the remaining sequences are undisturbed:
+
+<pre style="color: silver; background: black;">
+grep -vFf no_nested_gene_models.fasta genes_without_introns.fasta.faa >> genes_without_introns_or_nests.fasta.faa
+awk 'NR==FNR{array[$1];next}!($1 in array){print $1}' no_nested_gene_models.fasta genes_without_introns_or_nests.fasta.faa >> genes_without_introns_or_nests.check
+
+sort genes_without_introns_or_nests.check >> sorted_genes_without_introns_or_nests.check
+sort genes_without_introns_or_nests.fasta.faa >> sorted_genes_without_introns_or_nests.fasta.faa
+diff sorted_genes_without_introns_or_nests.check sorted_genes_without_introns_or_nests.fasta.faa</pre>
+
+The fasta passes the check. The final fasta file is located at: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/genes_without_introns_or_nests.fasta.faa`.
+
+
