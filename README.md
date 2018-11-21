@@ -21,7 +21,7 @@
 
 <h2 id="Second_Point_Header">Previous steps taken</h2>
 
-The Protea transcriptome was assembled and masked (masked assembly located at `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/masked_genome`). The  `repeatmodeler` output is located at `/UCHC/LABS/Wegrzyn/proteaBraker/protea/repeatmodeler`.
+The Protea transcriptome was assembled and masked (masked assembly located at `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/masked_genome`). The  `repeatmodeler` output is located at `/UCHC/LABS/Wegrzyn/proteaBraker/protea/repeatmodeler`.
 
 <h2 id="Third_Point_Header">Quality control using sickle</h2>
 
@@ -39,11 +39,11 @@ sickle pe -f /UCHC/LABS/CBC/vj_projects/protea_repens/raw_reads/RIV21_UCBdata_al
 
 The output is broken down as follows:
 
-Trimmed forward reads: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/trim_data/trimmed_output_RIV21_UCBdata_allforward.fastq`
+Trimmed forward reads: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/trim_data/trimmed_output_RIV21_UCBdata_allforward.fastq`
 
-Trimmed reverse reads: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/trim_data/trimmed_output_RIV21_UCBdata_allreverse.fastq`
+Trimmed reverse reads: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/trim_data/trimmed_output_RIV21_UCBdata_allreverse.fastq`
 
-Trimmed singles: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/trimmed_singles_RIV21_UCBdata_all.fastq`
+Trimmed singles: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/trimmed_singles_RIV21_UCBdata_all.fastq`
 
 These are the stats from sickle:
 <pre style="color: silver; background: black;">
@@ -59,13 +59,13 @@ FastQ single records discarded: 52593028 (from PE1: 4239960, from PE2: 48353068)
 
 <h2 id="Fourth_Point_Header">Aligning the reads with hisat2</h2>
 
-First, using the masked transcriptome at `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/masked_genome`, an index was created with the following code:
+First, using the masked transcriptome at `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/masked_genome`, an index was created with the following code:
 
 <pre style="color: silver; background: black;">
 module load hisat2
 #hisat2-build genome.fa.masked.filtered  protea_index</pre>
 
-The index is located at `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/indexing_and_alignment/index`.
+The index is located at `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/indexing_and_alignment/index`.
 
 Next, the trimmed reads were aligned using the following code:
 
@@ -94,7 +94,7 @@ The statistics of the alignment are:
 70.50% overall alignment rate
 </pre>
 
-The aligned reads are located at: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/indexing_and_alignment/alignment/RIV21_UCBdata_all.sam`.
+The aligned reads are located at: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/indexing_and_alignment/alignment/RIV21_UCBdata_all.sam`.
 
 Next, the aligned reads were sorted with the following code:
 
@@ -102,7 +102,7 @@ Next, the aligned reads were sorted with the following code:
 
 samtools sort -@ 8 -n -o sorted_reads.bam RIV21_UCBdata_all.sam</pre>
 
-The sorted reads are located at: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/alignment_sorting/sorted_reads.bam`.
+The sorted reads are located at: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/alignment_sorting/sorted_reads.bam`.
 
 <h2 id="Fifth_Point_Header">Predicting gene models with BRAKER</h2>
 
@@ -120,16 +120,16 @@ export PERL5LIB=/UCHC/LABS/Wegrzyn/perl5/lib/perl5/
 export PERLINC=/UCHC/LABS/Wegrzyn/perl5/lib/perl5/
 
 braker.pl --cores 16 --species=protea --softmasking 1 --GENEMARK_PATH=/UCHC/LABS/Wegrzyn/local_software/gm_et_linux_64/gmes_petap/ \
---genome=/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/masked_genome/genome.masked.filtered.fa \
---bam /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/alignment_sorting/sorted_reads.bam --gff3 </pre>
+--genome=/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/masked_genome/genome.masked.filtered.fa \
+--bam /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/alignment_sorting/sorted_reads.bam --gff3 </pre>
 
-The output is located at: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/gene_modeling_with_BRAKER/braker/protea`.
+The output is located at: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gene_modeling_with_BRAKER/braker/protea`.
 
 Of note are a few particular files from the output:
 
-The predicted amino acid sequences of the models: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/gene_modeling_with_BRAKER/braker/protea/augustus.hints.aa`
+The predicted amino acid sequences of the models: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gene_modeling_with_BRAKER/braker/protea/augustus.hints.aa`
 
-The corresponding gff3 file to the predicted AA sequences: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/gene_modeling_with_BRAKER/braker/protea/augustus.hints.aa`
+The corresponding gff3 file to the predicted AA sequences: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gene_modeling_with_BRAKER/braker/protea/augustus.hints.aa`
 
 There were 35896 predicted amino acid sequences determined via: `grep -c ">" augustus.hints.aa`.
 
@@ -162,11 +162,11 @@ perl gFACs.pl \
 --get-fasta-with-introns \
 --create-gtf \
 --get-protein-fasta \
---fasta /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/masked_genome/genome.masked.filtered.fa \
--O /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/gfacs_stats_and_cleaning/mono_exonics/ \
-/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/gene_modeling_with_BRAKER/braker/protea/augustus.hints.gff3</pre>
+--fasta /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/masked_genome/genome.masked.filtered.fa \
+-O /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/mono_exonics/ \
+/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gene_modeling_with_BRAKER/braker/protea/augustus.hints.gff3</pre>
 
-The results are at `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/gfacs_stats_and_cleaning/mono_exonics/`.
+The results are at `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/mono_exonics/`.
 
 Here are some statistics (from `*statistics.txt`:
 <pre style="color: silver; background: black;">
@@ -208,11 +208,11 @@ perl gFACs.pl \
 --get-fasta-with-introns \
 --create-gtf \
 --get-protein-fasta \
---fasta /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/masked_genome/genome.masked.filtered.fa \
--O /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/gfacs_stats_and_cleaning/multi_exonics/ \
-/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/gene_modeling_with_BRAKER/braker/protea/augustus.hints.gff3</pre>
+--fasta /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/masked_genome/genome.masked.filtered.fa \
+-O /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/multi_exonics/ \
+/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gene_modeling_with_BRAKER/braker/protea/augustus.hints.gff3</pre>
 
-The results are at: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/gfacs_stats_and_cleaning/multi_exonics/ `
+The results are at: `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/multi_exonics/ `
 
 Here are some statistics (from `*statistics.txt`):
 <pre style="color: silver; background: black;">
@@ -246,7 +246,7 @@ Double Partials		5p Partials		3p Partials	 	Complete Genes	 	Total
 The double partials were removed. We see agreement.
 
 The multiexonic and monoexonic checked faa's and gtfs were combined into `all_genes.faa` and `all_genes.gtf` at the location:
-`/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/gfacs_stats_and_cleaning/all_genes`.
+`/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/all_genes`.
 
 Our final table is as follows:
 <pre style="color: silver; background: black;">
@@ -261,18 +261,18 @@ all_genes.faa
 5p Partials		3p Partials		Complete Genes		Total
 63			179			23016			23258</pre>
 
-For reference, the complete BRAKER output (`/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/gene_modeling_with_BRAKER/braker/protea/augustus.hints.aa`) was run through the checking script. Because the checking script requires `*` as a stop codon to determine partials and `augustus.hints.aa` does not contain stop codons, the following code was executed to re-write `augustus.hints.aa` with stop codons:
+For reference, the complete BRAKER output (`/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gene_modeling_with_BRAKER/braker/protea/augustus.hints.aa`) was run through the checking script. Because the checking script requires `*` as a stop codon to determine partials and `augustus.hints.aa` does not contain stop codons, the following code was executed to re-write `augustus.hints.aa` with stop codons:
 <pre style="color: silver; background: black;">
 cd /UCHC/LABS/Wegrzyn/gFACs/
 perl gFACs.pl -f braker_2.05_gff3 \
 --statistics \
 --splice-rescue \ 
 --get-protein-fasta \
---fasta /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/masked_genome/genome.masked.filtered.fa \
--O /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/gfacs_stats_and_cleaning/braker_out/ \
-/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/gene_modeling_with_BRAKER/braker/protea/augustus.hints.gff3</pre>
+--fasta /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/masked_genome/genome.masked.filtered.fa \
+-O /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/braker_out/ \
+/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gene_modeling_with_BRAKER/braker/protea/augustus.hints.gff3</pre>
 
-The final `faa` is located at `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/gfacs_stats_and_cleaning/braker_out/genes_without_introns.fasta.faa`.
+The final `faa` is located at `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/braker_out/genes_without_introns.fasta.faa`.
 
 This fasta was run through the checking software to yield the following statistics:
 <pre style="color: silver; background: black;">
@@ -304,14 +304,14 @@ module load python/2.7.9
 
 /UCHC/LABS/Wegrzyn/EnTAP/EnTAP --runP -d /isg/shared/databases/Diamond/Uniprot/uniprot_sprot.dmnd \
 -d /isg/shared/databases/Diamond/RefSeq/plant.protein.faa.87.dmnd \
--i /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/gfacs_stats_and_cleaning/all_genes/all_genes.faa \
+-i /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/all_genes/all_genes.faa \
 -c fungi -c bacteria --taxon Protea \
---out-dir /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/functional_annotation_with_EnTAP/entap_out \
+--out-dir /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/functional_annotation_with_EnTAP/entap_out \
 --tcoverage 70 --qcoverage 70 \
 -t 16
 </pre>
 
-The output is located at `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/annotation/functional_annotation_with_EnTAP/entap_out`.
+The output is located at `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/functional_annotation_with_EnTAP/entap_out`.
 
 <h2 id="uniprot">Statistics from uniprot database search</h2>
 Here are the statistics for the uniprot database hits:
