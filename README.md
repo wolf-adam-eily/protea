@@ -658,7 +658,7 @@ scaffold148870	714	717	start_codon	+	.
 scaffold148870	777	5154	intron	+	.
 scaffold148870	5327	5696	intron	+	.
 scaffold148870	5725	6534	intron,start_codon	+	.
-scaffold148870	6623	6626	stop_codon	+	.</strong></pre>
+scaffold148870	6623	6626	stop_codon	+	.</strong><
 
 grep "intron" non_gene_modules >> non_gene_introns
 wc -l non_gene_introns
