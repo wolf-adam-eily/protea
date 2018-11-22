@@ -700,7 +700,7 @@ grep -c ">" genes_without_introns_or_nests.fasta.faa
 grep -c "gene" nested_genes_removed.gtf
 <strong>17247</strong></pre>
 
-<h2 id="Tenth_Point_Header">Final checks and finished analyis files</h2>
+<h2 id="Tenth_Point_Header">Final checks and finished analysis files</h2>
 
 Let's check `nested_genes_removed.gtf` and `genes_without_introns_or_nests.fasta.faa`. To do this, we need to arrange `nested_genes_removed.gtf` in the same order the scaffolds appear in the masked genome and run the newly arranged `gtf` through gFACs. First, we make a subdirectory: `mkdir /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/check`. Next, we create the properly arrangeed gtf in the directory `entap_no_contaminants`:
 
@@ -752,7 +752,7 @@ Let's check the amino acid fasta. Because each sequence is made up of two lines,
 wc -l genes_without_introns.fasta.faa
 <strong>34495 genes_without_introns.fasta.fa</strong>
 
-awk -v RS=">" 'NR==FNR{array[$0];next}$0 in array{print $0}' genes_without_introns.fasta ../genes_without_introns_or_nests.fasta.faa >> aa_fasta_check
+awk -v RS=">" -F ">" 'NR==FNR{array[$0];next}$0 in array{print $0}' genes_without_introns.fasta ../faa/genes_without_introns_or_nests.fasta.faa >> aa_fasta_check
 wc -l aa_fasta_check
 <strong>2</strong>
 head aa_fasta_check
