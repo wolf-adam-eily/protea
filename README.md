@@ -16,7 +16,7 @@
 		<li><a href="#taxonomics">Taxonomic breakdown of EnTAP run</a></li></ol>
 <li><a href="#Eighth_Point_Header">8 Further statistical breakdown of EnTAP output</a></li>
 	<li><a href="#Ninth_Point_Header">9 Final GTF check</a></li>
-	<li><a href="#Tenth_Point_Header">10 Final checks and finished analysis files
+	<li><a href="#Tenth_Point_Header">10 Creating the `STAR` index</a></li>
 </ul>
 </div>
 
@@ -470,7 +470,7 @@ Here is a flow of the statistics through the annotation process:
 0.979		0.952		0.394		0.477</pre>
 
 <h2 id="Ninth_Point_Header">Final GTF check</h2>
-Before creating the `HISAT2` index, the final gtf ( `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/out.gtf` ) was compared to the <strong>BRAKER_OUTPUT --> gFACs</strong> ( `UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/all_genes/all_genes.gtf` ) using the following code:
+Before creating the `STAR` index, the final gtf (`/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/out.gtf`) was compared to the <strong>BRAKER_OUTPUT --> gFACs</strong> (`UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/all_genes/all_genes.gtf`) using the following code:
 
 `bedtools intersect -s -v -a out.gtf -b all_genes.gtf >> check.gtf`
 
@@ -700,8 +700,6 @@ grep -c ">" genes_without_introns_or_nests.fasta.faa
 grep -c "gene" nested_genes_removed.gtf
 <strong>17247</strong></pre>
 
-<h2 id="Tenth_Point_Header">Final checks and finished analysis files</h2>
-
 Let's check `nested_genes_removed.gtf` and `genes_without_introns_or_nests.fasta.faa`. To do this, we need to arrange `nested_genes_removed.gtf` in the same order the scaffolds appear in the masked genome and run the newly arranged `gtf` through gFACs. First, we make a subdirectory: `mkdir /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/check`. Next, we create the properly arrangeed gtf in the directory `entap_no_contaminants`:
 
 <pre style="color: silver; background: black;">awk 'NR==FNR{array[$0];next}$0 in array{print $0}' no_nested_genes_gfacs.gtf out.gtf >> gfacs_formatted.gtf
@@ -816,3 +814,91 @@ The following files were placed into the folder `/UCHC/LABS/Wegrzyn/proteaBraker
 `annotated_proteins.gtf` (`gfacs_stats_and_cleaning/entap_no_contaminants/gtfs/gfacs_formatted.gtf`)
 `codingseq.fasta` (`gfacs_stats_and_cleaning/entap_no_contaminants/check/genes_without_introns.fasta`)
 
+
+<h2 id="Tenth_Point_Header">Creating the STAR index</h2>
+To create the `STAR` index, `the annotated_proteins.gtf` file had to be re-formatted for `STAR`'s preferences. Here are the differences:
+
+<pre style="color: silver; background: black;">head annotated_proteins.gtf
+<strong>scaffold322564	GFACS	gene	6207	6524	1	+	.	g1
+scaffold322564	GFACS	start_codon	6207	6209	.	+	.	.
+scaffold322564	GFACS	stop_codon	6522	6524	.	+	.	.
+scaffold322564	GFACS	CDS	6207	6524	1	+	.	g1.t1
+scaffold121490	GFACS	gene	2105	5260	0.59	+	.	g2
+scaffold121490	GFACS	start_codon	2105	2107	.	+	.	.
+scaffold121490	GFACS	stop_codon	5258	5260	.	+	.	.
+scaffold121490	GFACS	CDS	2105	2546	0.69	+	.	g2.t1
+scaffold121490	GFACS	CDS	4326	5260	0.88	+	.	g2.t1
+scaffold121490	GFACS	intron	2547	4325	1	+	.	.
+</strong>
+head star_gtf
+<strong>scaffold322564                 GFACS  gene         6207    6524    1     +  .  gene_id "g1";
+scaffold322564                 GFACS  start_codon  6207    6209    .     +  .  .;
+scaffold322564                 GFACS  stop_codon   6522    6524    .     +  .  .;
+scaffold322564                 GFACS  exon         6207    6524    1     +  .  gene_id "g1.t1"; transcript_id "g1.t1";
+scaffold121490                 GFACS  gene         2105    5260    0.59  +  .  gene_id "g2";
+scaffold121490                 GFACS  start_codon  2105    2107    .     +  .  .;
+scaffold121490                 GFACS  stop_codon   5258    5260    .     +  .  .;
+scaffold121490                 GFACS  exon         2105    2546    0.69  +  .  gene_id "g2.t1"; transcript_id "g2.t1";
+scaffold121490                 GFACS  exon         4326    5260    0.88  +  .  gene_id "g2.t1"; transcript_id "g2.t1";
+scaffold121490                 GFACS  intron       2547    4325    1     +  .  .;
+</strong>
+</pre>
+
+The `gtf` is located at `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/STAR_INDEX`. The `STAR` index was then built with the following code:
+
+<pre style="color: silver; background: black;">module load STAR
+
+STAR --runThreadN=8 --runMode=genomeGenerate \
+--genomeFastaFiles=../masked_genome/genome.masked.filtered.fa \
+--genomeDir=index/ \
+--sjdbGTFfile=annotated_star_gtf.gtf \
+--sjdbOverhang=100 \
+--limitGenomeGenerateRAM=66246262144
+</pre>
+
+With the index located at `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/STAR_INDEX/index`. We see:
+<pre style="color: silver; background: black;">
+grep -c "CDS" ../../FTP/annotated_proteins.gtf 
+<strong>78430</strong>
+head exonInfo.tab 
+<strong>78430</strong></pre>
+
+That all of our exons have made it into the index. But, to be sure, we pull the scaffold, start, stop, and strand of the exons from the `GTF` (in `FTP`)
+
+<pre style="color: silver; background: black;">
+awk '{if ($3=="intron")print $1"\t"$4"\t"$5"\t"$7}' annotated_proteins.gtf >> introns
+head introns
+<strong>scaffold121490	2547	4325	+
+scaffold57284	5917	6052	+
+scaffold57284	6150	7597	+
+scaffold57284	7863	8012	+
+scaffold26244	15784	16452	+
+scaffold26244	16912	20090	+
+scaffold140992	12603	13237	+
+scaffold188369	5002	5100	+
+scaffold209363	673	1261	-
+scaffold209363	1478	4274	-
+</strong>
+
+head ../STAR_INDEX/index/sjdbList.fromGTF.out.tab 
+<strong>scaffold121490	2547	4325	+
+scaffold57284	5917	6052	+
+scaffold57284	6150	7597	+
+scaffold57284	7863	8012	+
+scaffold26244	15784	16452	+
+scaffold26244	16912	20090	+
+scaffold140992	12603	13237	+
+scaffold188369	5002	5100	+
+scaffold209363	673	1261	-
+scaffold209363	1478	4274	-
+</strong>
+
+awk 'NR==FNR{array[$0];next}!($0 in array){print $0}' ../STAR_INDEX/index/sjdbList.fromGTF.out.tab introns >> missing_1
+awk 'NR==FNR{array[$0];next}!($0 in array){print $0}' introns ../STAR_INDEX/index/sjdbList.fromGTF.out.tab >> missing_2
+wc -l missing_1
+<strong>49</strong>
+wc -l missing_2
+<strong>0</strong>
+</pre>
+
+We see that there are 49 introns in our gtf which are not in the index. These are introns which have _no_ exons between them (proof left out but easily verifiable on your own). We thus see that all of our real splice sites have been incorporated into the index.
