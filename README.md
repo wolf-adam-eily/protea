@@ -735,28 +735,84 @@ cd /UCHC/LABS/Wegrzyn/gFACs/
 perl gFACs.pl -f gFACs_gtf \
 --statistics \
 --splice-rescue \
---get-protein-fasta \
+--entap-annotation /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/functional_annotation_with_EnTAP/entap_out/no_contaminants.tsv \
+--annotated-all-genes-only \
+--rem-start-introns \
+--rem-end-introns \
 --get-fasta-without-introns \
---fasta /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/masked_genome/genome.masked.filtered.fa \
+--get-protein-fasta \
+--create-gtf \
+--fasta /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/masked_genome/genome.fasta \
 -O /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/check/ \
-/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/gfacs_formatted.gtf</pre>
-
+/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/gtfs/gfacs_formatted.gtf
+</pre>
+sls
 <pre style="color: silver; background: black;">cd check
 ls
 genes_without_introns.fasta  genes_without_introns.fasta.faa  gene_table.txt  gFACs_log.txt  statistics.txt</pre>
 
-Let's check the amino acid fasta. Because each sequence is made up of two lines, a header and the amino acid sequence, respectively, we use `awk` with a record separator `>` so that we are checking to see if each line tandem in one fasta matches a line tandem in the other fasta:
+Let's check the amino acid fasta. Because each sequence is made up of two lines, a header and the amino acid sequence, respectively, we use `awk` with a record separator `>` and field separator `$` so that we are checking to see if each line tandem in one fasta matches a line tandem in the other fasta.
 
-<pre style="color: silver; background: black;">wc -l genes_without_introns.fasta
-<strong>34495 genes_without_introns.fasta</strong>
-wc -l genes_without_introns.fasta.faa
-<strong>34495 genes_without_introns.fasta.fa</strong>
+<pre style="color: silver; background: black;"
+awk -v RS=">" -F "$" 'NR==FNR{array[$1];next}!($1 in array){print $1}' genes_without_introns.fasta.faa ../faa/genes_without_introns_or_nests.fasta.faa >> manual_not_in_gfacs
 
-awk -v RS=">" -F ">" 'NR==FNR{array[$0];next}$0 in array{print $0}' genes_without_introns.fasta ../faa/genes_without_introns_or_nests.fasta.faa >> aa_fasta_check
-wc -l aa_fasta_check
-<strong>2</strong>
-head aa_fasta_check
+awk -v RS=">" -F "$" 'NR==FNR{array[$1];next}!($1 in array){print $1}' ../faa/genes_without_introns_or_nests.fasta.faa genes_without_introns.fasta.faa >> gfacs_not_in_manual
+</pre>
+
+There are 9 lines in each file. Let's check them out:
+
+<pre style="color: silver; background: black;">
+head -n 10 manual_not_in_gfacs 
+g14239
+MASSHLLGASFPDAVDWHSSVPPNGSSFAFPKLSSLSILTWQSHRATTTTLRVSTMAKRKTEEAEVTQQVQTISSGGKPQEAVEEEVEEDLPWIQEKAMDLVEFTGSVTQAIPGPKVGSSSLPWILALPLAYAGI
+
+g31617
+MEDFPVTSKMSTTAAKLATTLAWRFAASNGNGYGATDLERNMDAKLQNSEPPTPVSVMKMGLRDRTTSMEDPDGTLASVAQCIEQLRKSSSTAQEKENALKQLLDLVDTRDSAFSAVGSHSQAVPILVSLLRSG
+
+g28896
+MDVEKSSLCNCVVNFLLEENYLLTAFELLHELLDDGRDALAIRLKEFFADTAQFPPDQISRFNAIRVADPQSLLEEKETVEGKLALSEYELRLAQEDILRLKTELQKRTESSPDDLSGSNLDVSVEDGPTLQQGK
+
+head -n 10 gfacs_not_in_manual 
+g14239
+LST*CIITRTTR*SLT*VSWI*TIHHLLNRIHIPSLRESMYPKGVYIFICNPKYLLDD*GAIS*TELWYLR*IKNLSKKGTHSKFSI*SLFCVS*NIHDNWSLVSYNSP*DLI*NCSNCGIIQH*SFSELD*VCN
+
+g31617
+LFVGPLELNFQIPRRPTFAFWKECVLPSDCSKHYNPINLDSYFSERALSNFALILARDVKLLTFWWTIKCPCKVLVPLRSRTS*NNLSLSWRSIA*RELAVHTWASH*LL*IVTTLYNYH*GPWQTLQKEFCLLL
+
+g28896
+LT*LSLGSFLITLGFSPKHVSEASPHDSPERCVFCWGLWHRLWRLNWIWWMWISTLFLSKQSSFSK*TGH*GSNAKMGTHRLTE*FKSSS*SFPHYDFKGFFMCWIK*IWVF*KILYCREEEIPYTSCRKICSI*
 
 </pre>
 
-Great. The amino acid sequences are robust.
+We see that gFACs has outputted something slightly different than the previous run. Let's put these headers in a file (separated by newlines) and see what `BRAKER` had predicted:
+
+<pre style="color: silver; background: black;">grep "g" manual_not_in_gfacs >> check_headers
+head check_headers
+<strong>g14239
+g31617
+g28896
+</strong>
+
+grep -A 1 -Ff check_headers ../../../gene_modeling_with_BRAKER/braker/protea/augustus.hints.aa
+<strong>>g14239.t1
+MASSHLLGASFPDAVDWHSSVPPNGSSFAFPKLSSLSILTWQSHRATTTTLRVSTMAKRKTEEAEVTQQVQTISSGGKPQEAVEEEVEEDLPWIQEKAMD
+--
+>g28896.t1
+MDVEKSSLCNCVVNFLLEENYLLTAFELLHELLDDGRDALAIRLKEFFADTAQFPPDQISRFNAIRVADPQSLLEEKETVEGKLALSEYELRLAQEDILR
+--
+>g28896.t2
+MDVEKSSLCNCVVNFLLEENYLLTAFELLHELLDDGRDALAIRLKEFFADTAQFPPDQISRFNAIRVADPQSLLEEKETVEGKLALSEYELRLAQEDILR
+--
+>g31617.t1
+MEDFPVTSKMSTTAAKLATTLAWRFAASNGNGYGATDLERNMDAKLQNSEPPTPVSVMKMGLRDRTTSMEDPDGTLASVAQCIEQLRKSSSTAQEKENAL
+</strong></pre>
+
+We see the manual headers has the correct sequences. As of this publication, we are not quite sure why the gFACs output varied on only these three proteins, but are investigating it.
+
+The following files were placed into the folder `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/FTP/`:
+
+`annotated_protein_meta_data.tsv` (`functional_annotation_with_EnTAP/entap_out/no_contaminants.tsv`)
+`annotated_proteins.faa` (`gfacs_stats_and_cleaning/entap_no_contaminants/faa/genes_without_introns_or_nests.fasta.faa`)
+`annotated_proteins.gtf` (`gfacs_stats_and_cleaning/entap_no_contaminants/gtfs/gfacs_formatted.gtf`)
+`codingseq.fasta` (`gfacs_stats_and_cleaning/entap_no_contaminants/check/genes_without_introns.fasta`)
+
