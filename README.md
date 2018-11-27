@@ -809,10 +809,10 @@ We see the manual headers has the correct sequences. As of this publication, we 
 
 The following files were placed into the folder `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/FTP/`:
 
-`annotated_protein_meta_data.tsv` (`functional_annotation_with_EnTAP/entap_out/no_contaminants.tsv`)
-`annotated_proteins.faa` (`gfacs_stats_and_cleaning/entap_no_contaminants/faa/genes_without_introns_or_nests.fasta.faa`)
-`annotated_proteins.gtf` (`gfacs_stats_and_cleaning/entap_no_contaminants/gtfs/gfacs_formatted.gtf`)
-`codingseq.fasta` (`gfacs_stats_and_cleaning/entap_no_contaminants/check/genes_without_introns.fasta`)
+`annotated_protein_meta_data.tsv` (`functional_annotation_with_EnTAP/entap_out/no_contaminants.tsv`)<br>
+`annotated_proteins.faa` (`gfacs_stats_and_cleaning/entap_no_contaminants/faa/genes_without_introns_or_nests.fasta.faa`)<br>
+`annotated_proteins.gtf` (`gfacs_stats_and_cleaning/entap_no_contaminants/gtfs/gfacs_formatted.gtf`)<br>
+`codingseq.fasta` (`gfacs_stats_and_cleaning/entap_no_contaminants/check/genes_without_introns.fasta`)<br>
 
 
 <h2 id="Tenth_Point_Header">Creating the STAR index</h2>
