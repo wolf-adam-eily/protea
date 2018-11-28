@@ -18,7 +18,11 @@
 	<li><a href="#Ninth_Point_Header">9 Final GTF check</a></li>
 	<li><a href="#Tenth_Point_Header">10 Creating the `STAR` index</a></li>
 	<li><a href="#Eleventh_Point_Header">11 Quast statistics</a></li>
+	<ol><li><a href="#unfiltered_genome">Unfiltered/Unmasked genome QUAST</a></li>
+		<ol><li><a href="#filtered_genome">Filtered/Masked genome QUAST</a></li>
 	<li><a href="#Twelfth_Point_Header">12 BUSCO statistics</a></li>
+			<ol><li><a href="#before_busco">Genome BUSCO</a></li>
+				<ol><li><a href="#after_busco">Annotated protein BUSCO</a></li>
 </ul>
 </div>
 
@@ -906,6 +910,7 @@ wc -l missing_2
 We see that there are 49 introns in our gtf which are not in the index. These are introns which have _no_ exons between them (proof left out but easily verifiable on your own). We thus see that all of our real splice sites have been incorporated into the index.
 
 <h2 id="Eleventh_Point_Header">`QUAST` statistics</h2>
+<h2 id="unfiltered_genome">Unfiltered/Unmasked `QUAST` statistics</h2>
 The unfiltered/unmasked genome `QUAST` statistics were conducted with the following code in the folder `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/QUAST_statistics/`:
 <pre style="color: silver; background: black;">
 module load quast
@@ -942,6 +947,7 @@ L75                         61135	157114
 
 The filtered/masked genome `QUAST` statistics were calculated with the following code:
 
+<h2 id="filtered_genome">Filtered/Masked genome `QUAST`</h2>
 <pre style="color: silver; background: black;">
 module load quast
 quast.py /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/align/masked_genome/genome.masked.filtered.fa -o filtered_quast -s --eukaryote
@@ -964,7 +970,7 @@ L75                         39400                   137007
 We see that the N's per 100kbp has been significantly improved, as well as the `N50, N75, L50, L75` values.
 
 <h2 id="Twelfth_Point_Header">`BUSCO` stats</h2>
-
+<h2 id="before_busco">Genome BUSCO</h2>
 A genome `BUSCO` analysis was run with the following code (in the directory `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/BUSCO_stats/`):
 
 <pre style="color: silver; background: black;">
@@ -987,6 +993,7 @@ The following statistics were produced (`summary.txt`):
         349     Missing BUSCOs (M)
         1440    Total BUSCO groups searched</pre>
 	
+<h2 id="after_busco">Annotated protein BUSCO</h2>
 A protein `BUSCO` analysis was run using the annotated proteins withthe following code:
 
 <pre style="color: silver; background: black;">export AUGUSTUS_CONFIG_PATH=/home/CAM/$USER/3.2.3/config
