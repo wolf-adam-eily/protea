@@ -18,6 +18,7 @@
 	<li><a href="#Ninth_Point_Header">9 Final GTF check</a></li>
 	<li><a href="#Tenth_Point_Header">10 Creating the `STAR` index</a></li>
 	<li><a href="#Eleventh_Point_Header">11 Quast statistics</a></li>
+	<li><a href="#Twelfth_Point_Header">12 BUSCO statistics</a></li>
 </ul>
 </div>
 
@@ -962,3 +963,51 @@ L75                         39400                   137007
 
 We see that the N's per 100kbp has been significantly improved, as well as the `N50, N75, L50, L75` values.
 
+<h2 id="Twelfth_Point_Header">`BUSCO` stats</h2>
+
+A genome `BUSCO` analysis was run with the following code (in the directory `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/BUSCO_stats/`):
+
+<pre style="color: silver; background: black;">
+export AUGUSTUS_CONFIG_PATH=/home/CAM/$USER/3.2.3/config
+module load busco
+module unload augustus
+module unload blast/2.7.1
+export PATH=/home/CAM/$USER/3.2.3/bin:/home/CAM/$USER/3.2.3/scripts:$PATH
+run_BUSCO.py -i /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/masked_genome/genome.masked.filtered.fa -o before_busco -l /isg/shared/databases/busco_lineages/embryophyta_odb9/ -m geno -c 8
+</pre>
+
+The following statistics were produced (`summary.txt`):
+<pre style="color: silver; background: black;">
+        C:65.2%[S:61.2%,D:4.0%],F:10.6%,M:24.2%,n:1440
+
+        939     Complete BUSCOs (C)
+        881     Complete and single-copy BUSCOs (S)
+        58	Complete and duplicated BUSCOs (D)
+        152     Fragmented BUSCOs (F)
+        349     Missing BUSCOs (M)
+        1440    Total BUSCO groups searched</pre>
+	
+A protein `BUSCO` analysis was run using the annotated proteins withthe following code:
+
+<pre style="color: silver; background: black;">export AUGUSTUS_CONFIG_PATH=/home/CAM/$USER/3.2.3/config
+module load busco
+module unload augustus
+module unload blast/2.7.1
+export PATH=/home/CAM/$USER/3.2.3/bin:/home/CAM/$USER/3.2.3/scripts:$PATH
+run_BUSCO.py -i /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/FTP/genes_without_introns_or_nests.fasta.faa \
+-o final_busco -l /isg/shared/databases/busco_lineages/embryophyta_odb9/ -m prot -c 8
+</pre>
+
+The following statistics were produced (`summary.txt`):
+<pre style="color: silver; background: black;">
+    C:51.2%[S:47.1%,D:4.1%],F:9.7%,M:39.1%,n:1440
+
+        737     Complete BUSCOs (C)
+        678     Complete and single-copy BUSCOs (S)
+        59	Complete and duplicated BUSCOs (D)
+        140     Fragmented BUSCOs (F)
+        563     Missing BUSCOs (M)
+        1440    Total BUSCO groups searched
+</pre>
+
+We see that we lose quite a few BUSCOs going from the genome to the annotated proteins. With the fragmented nature of the genome it is most plausible that many gene models were lost or failed quality checks, capturing only a fraction of the theoretical genetic information.
