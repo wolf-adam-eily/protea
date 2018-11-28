@@ -16,10 +16,10 @@
 		<li><a href="#taxonomics">Taxonomic breakdown of EnTAP run</a></li></ol>
 <li><a href="#Eighth_Point_Header">8 Further statistical breakdown of EnTAP output</a></li>
 	<li><a href="#Ninth_Point_Header">9 Final GTF check</a></li>
-	<ol><li><a href="bedtools">Determining nested gene models with bedtools</a></li>
-		<li><a href="gtf_removal">Removing nested gene models from GTF</a></li>
-		<li><a href="
 	<ol><li><a href="#bedtools">Determining nested gene models with bedtools</a></li>
+		<li><a href="#gtf_removal">Removing nested gene models from GTF</a></li>
+		<li><a href="#fasta_removal">Removing nested gene models from protein fasta</a></li></ol>
+	<li><a href="#FTP">Final file destination for pertinent files (FTP)</a></li>
 	<li><a href="#Tenth_Point_Header">10 Creating the `STAR` index</a></li>
 	<li><a href="#Eleventh_Point_Header">11 Quast statistics</a></li>
 	<ol><li><a href="#unfiltered_genome">Unfiltered/Unmasked genome QUAST</a></li>
@@ -822,7 +822,7 @@ MEDFPVTSKMSTTAAKLATTLAWRFAASNGNGYGATDLERNMDAKLQNSEPPTPVSVMKMGLRDRTTSMEDPDGTLASVA
 We see the manual headers has the correct sequences. As of this publication, we are not quite sure why the gFACs output varied on only these three proteins, but are investigating it.
 
 
-<h2 id="file_dest">FTP folder with pertinent files</h2>
+<h2 id="FTP">FTP folder with pertinent files</h2>
 The following files were placed into the folder `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/FTP/`:
 
 `annotated_protein_meta_data.tsv` (`functional_annotation_with_EnTAP/entap_out/no_contaminants.tsv`)<br>
