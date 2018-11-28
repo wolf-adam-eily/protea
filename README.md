@@ -16,6 +16,9 @@
 		<li><a href="#taxonomics">Taxonomic breakdown of EnTAP run</a></li></ol>
 <li><a href="#Eighth_Point_Header">8 Further statistical breakdown of EnTAP output</a></li>
 	<li><a href="#Ninth_Point_Header">9 Final GTF check</a></li>
+	<ol><li><a href="gtf_removal">Removing nested gene models from GTF</a></li>
+		<li><a href="
+	<ol><li><a href="#bedtools">Determining nested gene models with bedtools</a></li>
 	<li><a href="#Tenth_Point_Header">10 Creating the `STAR` index</a></li>
 	<li><a href="#Eleventh_Point_Header">11 Quast statistics</a></li>
 	<ol><li><a href="#unfiltered_genome">Unfiltered/Unmasked genome QUAST</a></li>
@@ -476,6 +479,7 @@ Here is a flow of the statistics through the annotation process:
 0.979		0.952		0.394		0.477</pre>
 
 <h2 id="Ninth_Point_Header">Final GTF check</h2>
+<h2 id="bedtools">Determining nested gene models using bedtools</h2>
 Before creating the `STAR` index, the final gtf (`/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/out.gtf`) was compared to the <strong>BRAKER_OUTPUT --> gFACs</strong> (`UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/all_genes/all_genes.gtf`) using the following code:
 
 `bedtools intersect -s -v -a out.gtf -b all_genes.gtf >> check.gtf`
@@ -630,6 +634,7 @@ g31620
 g23103
 g23104</pre>
 
+<h2 id="gtf_removal">Removing nested gene models from the GTF</h2>
 We want to remove these genes from both the fasta and the gtf. Let's remove them from the gtf first:
 
 <pre style="color: silver; background: black;">grep -vwE "(g14240|g14241|g24790|g24792|g29143|g29144|g31619|g31620|g23103|g23104)" out.ordered.gtf >> nested_genes_removed.gtf</pre>
@@ -678,6 +683,7 @@ grep "CDS" non_gene_modules >> non_gene_exons
 wc -l non_gene_exons
 <strong>0 non_gene_exons</strong></pre>
 
+<h2 id="fasta_removal">Removing nested gene models from protein fasta</h2>
 Lastly, we need to remove the genes from the fasta. We place our nested gene ids into the file `nested_list`. Next, we use `awk` to retrieve the sequences, and `grep` to check that the actual protein sequences do not appear in any other genes:
 
 <pre style="color: silver; background: black;">id=$(cat nested_list)
@@ -706,6 +712,7 @@ grep -c ">" genes_without_introns_or_nests.fasta.faa
 grep -c "gene" nested_genes_removed.gtf
 <strong>17247</strong></pre>
 
+<h2 id="gfacs_check">Checking manually derived GTF and protein fasta using gFACs</h2>
 Let's check `nested_genes_removed.gtf` and `genes_without_introns_or_nests.fasta.faa`. To do this, we need to arrange `nested_genes_removed.gtf` in the same order the scaffolds appear in the masked genome and run the newly arranged `gtf` through gFACs. First, we make a subdirectory: `mkdir /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gfacs_stats_and_cleaning/entap_no_contaminants/check`. Next, we create the properly arrangeed gtf in the directory `entap_no_contaminants`:
 
 <pre style="color: silver; background: black;">awk 'NR==FNR{array[$0];next}$0 in array{print $0}' no_nested_genes_gfacs.gtf out.gtf >> gfacs_formatted.gtf
@@ -813,6 +820,8 @@ MEDFPVTSKMSTTAAKLATTLAWRFAASNGNGYGATDLERNMDAKLQNSEPPTPVSVMKMGLRDRTTSMEDPDGTLASVA
 
 We see the manual headers has the correct sequences. As of this publication, we are not quite sure why the gFACs output varied on only these three proteins, but are investigating it.
 
+
+<h2 id="file_dest">FTP folder with pertinent files</h2>
 The following files were placed into the folder `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/FTP/`:
 
 `annotated_protein_meta_data.tsv` (`functional_annotation_with_EnTAP/entap_out/no_contaminants.tsv`)<br>
