@@ -19,10 +19,10 @@
 	<li><a href="#Tenth_Point_Header">10 Creating the `STAR` index</a></li>
 	<li><a href="#Eleventh_Point_Header">11 Quast statistics</a></li>
 	<ol><li><a href="#unfiltered_genome">Unfiltered/Unmasked genome QUAST</a></li>
-		<ol><li><a href="#filtered_genome">Filtered/Masked genome QUAST</a></li>
+		<li><a href="#filtered_genome">Filtered/Masked genome QUAST</a></li></ol>
 	<li><a href="#Twelfth_Point_Header">12 BUSCO statistics</a></li>
 			<ol><li><a href="#before_busco">Genome BUSCO</a></li>
-				<ol><li><a href="#after_busco">Annotated protein BUSCO</a></li>
+				<li><a href="#after_busco">Annotated protein BUSCO</a></li></ol>
 </ul>
 </div>
 
