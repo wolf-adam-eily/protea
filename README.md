@@ -17,6 +17,7 @@
 <li><a href="#Eighth_Point_Header">8 Further statistical breakdown of EnTAP output</a></li>
 	<li><a href="#Ninth_Point_Header">9 Final GTF check</a></li>
 	<li><a href="#Tenth_Point_Header">10 Creating the `STAR` index</a></li>
+	<li><a href="#Eleventh_Point_Header">11 Quast statistics</a></li>
 </ul>
 </div>
 
@@ -902,3 +903,62 @@ wc -l missing_2
 </pre>
 
 We see that there are 49 introns in our gtf which are not in the index. These are introns which have _no_ exons between them (proof left out but easily verifiable on your own). We thus see that all of our real splice sites have been incorporated into the index.
+
+<h2 id="Eleventh_Point_Header">`QUAST` statistics</h2>
+The unfiltered/unmasked genome `QUAST` statistics were conducted with the following code in the folder `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/QUAST_statistics/`:
+<pre style="color: silver; background: black;">
+module load quast
+quast.py /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/genome.fasta -o unfiltered_quast -s --eukaryote</pre>
+
+Here are the basic reported statistics in `unfiltered_quast/report.txt`:
+
+All statistics are based on contigs of size >= 500 bp, unless otherwise noted (e.g., "# contigs (>= 0 bp)" and "Total length (>= 0 bp)" include all contigs).
+
+<pre style="color: silver; background: black;">
+Assembly                    genome	genome_broken
+# contigs (>= 0 bp)         207559	-
+# contigs (>= 1000 bp)      207559	167064
+# contigs (>= 5000 bp)      62864	14980
+# contigs (>= 10000 bp)     32219	1666
+# contigs (>= 25000 bp)     8775        2
+# contigs (>= 50000 bp)     2199        0
+Total length (>= 0 bp)      1282139926  -
+Total length (>= 1000 bp)   1282139926  414900613
+Total length (>= 5000 bp)   970393902   108862952
+Total length (>= 10000 bp)  753965988   20732886
+Total length (>= 25000 bp)  393973570   59699
+Total length (>= 50000 bp)  171574798   0
+# contigs                   207559	348046
+Largest contig              314858	31696
+Total length                1282139926  539581851
+GC (%)                      39.50	38.55
+N50                         13474	2155
+N75                         5165        1054
+L50                         22467	65641
+L75                         61135	157114
+# N's per 100 kbp           28110.61    5.97</pre>
+
+
+The filtered/masked genome `QUAST` statistics were calculated with the following code:
+
+<pre style="color: silver; background: black;">
+module load quast
+quast.py /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/align/masked_genome/genome.masked.filtered.fa -o filtered_quast -s --eukaryote
+</pre>
+
+And the basic statistics reported in `report.txt`:
+
+All statistics are based on contigs of size >= 500 bp, unless otherwise noted (e.g., "# contigs (>= 0 bp)" and "Total length (>= 0 bp)" include all contigs).
+
+<pre style="color: silver; background: black;">
+ALL_PREVIOUS_STATS_EQUAL_TO_UNFILTERED
+			    genome.masked.filtered  genome.masked.filtered.broken
+GC (%)                      39.40                   38.57
+N50                         17088                   2345
+N75                         8318                    1122
+L50                         16208                   58074
+L75                         39400                   137007
+# N's per 100 kbp           26193.56                5.98</pre></pre>
+
+We see that the N's per 100kbp has been significantly improved, as well as the `N50, N75, L50, L75` values.
+
