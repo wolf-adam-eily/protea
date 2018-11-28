@@ -16,7 +16,8 @@
 		<li><a href="#taxonomics">Taxonomic breakdown of EnTAP run</a></li></ol>
 <li><a href="#Eighth_Point_Header">8 Further statistical breakdown of EnTAP output</a></li>
 	<li><a href="#Ninth_Point_Header">9 Final GTF check</a></li>
-	<ol><li><a href="gtf_removal">Removing nested gene models from GTF</a></li>
+	<ol><li><a href="bedtools">Determining nested gene models with bedtools</a></li>
+		<li><a href="gtf_removal">Removing nested gene models from GTF</a></li>
 		<li><a href="
 	<ol><li><a href="#bedtools">Determining nested gene models with bedtools</a></li>
 	<li><a href="#Tenth_Point_Header">10 Creating the `STAR` index</a></li>
