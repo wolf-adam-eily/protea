@@ -1053,7 +1053,7 @@ scaffold259130  protea_repens   CDS     3239    3544    100     +       0       
 scaffold18032   protea_repens   gene    602     919     .       -       .       ID=TRINITY_DN30114_c0_g1_i1len=987path=[0:0-986].path1;Name=TRINITY_DN30114_$
 scaffold18032   protea_repens   mRNA    602     919     .       -       .       ID=TRINITY_DN30114_c0_g1_i1len=987path=[0:0-986].mrna1;Name=TRINITY_DN30114_$
 scaffold18032   protea_repens   exon    602     919     100     -       .       ID=TRINITY_DN30114_c0_g1_i1len=987path=[0:0-986].mrna1.exon1;Name=TRINITY_DN$
-scaffold18032   protea_repens   CDS     602     919     100     -       0       ID=TRINITY_DN30114_c0_g1_i1len=987path=[0:0-986].mrna1.cds1;Name=TRINITY_DN3$</strong>
+scaffold18032   protea_repens   CDS     602     919     100     -       0       ID=TRINITY_DN30114_c0_g1_i1len=987path=[0:0-986].mrna1.cds1;Name=TRINITY_DN3$</strong></pre>
 
 We want to compare the gene models hypothesized by `BRAKER` to these. The `BRAKER` gene models are located at `/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/gene_modeling_with_BRAKER/braker/protea/augustus.hints.gff3`. We will refer to the `BRAKER` gene models as the references. Our objective is to use `gffcompare` on the two files, which means we must format them. First, we remove the top two lines of the `GMAP` gff3. Next we remove all lines except for those that have the word "gene" or acronym "CDS" in the third column:
 
@@ -1125,6 +1125,6 @@ Here is the data visualized:
 <img src="images/barplot.jpeg">
 
 And here are the class-codes for reference:
-<img src="classcodes.jpeg">
+<img src="images/classcodes.jpeg">
 
 Next steps?
