@@ -1125,6 +1125,6 @@ Here is the data visualized:
 <img src="images/barplot.jpeg">
 
 And here are the class-codes for reference:
-<img src="images/classcodes.jpeg">
+<img src="images/classcodes.jpg">
 
 Next steps?
