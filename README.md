@@ -1103,22 +1103,21 @@ awk '$4=="u"{print $0}' gffout/*tracking > u
 We now count the number of hits in each category:
 
 <pre style="color: silver; background: black;">wc -l *
-13421 c
- 2216 e
- 2582 equal
- 2422 i
- 9362 j
-  120 k
-    0 m
-    0 n
- 1078 o
-  242 p
- 1188 r
-    7 s
- 1093 u
-  522 x
-   12 y
-34265 total
+  13421 c
+   2216 e
+   2582 equal
+   2422 i
+   9362 j
+    120 k
+      0 m
+      0 n
+   1078 o
+    242 p
+   1188 r
+      7 s
+    522 x
+     12 y
+  33172 total</strong>
 </pre>
 
 Here is the data visualized:
@@ -1238,21 +1237,41 @@ awk '$4=="p"{print $0}' gffout/*tracking > p
 awk '$4=="r"{print $0}' gffout/*tracking > r
 wc -l *
 <strong>
-  13421 c
-   2216 e
-   2582 equal
-   2422 i
-   9362 j
-    120 k
+  11335 c
+   1770 e
+   2717 equal
+   1639 i
+   6952 j
+    101 k
       0 m
       0 n
-   1078 o
-    242 p
-   1188 r
-      7 s
-    522 x
-     12 y
-  33172 total</strong>
+    946 o
+    258 p
+   1965 r
+      4 s
+    452 x
+     13 y
+  28152 total
+</strong>
   </pre>
   
   <img src="images/noretros.jpeg">
+  
+ Change:
+<pre style="color: silver; background: black;">
+-2086	c
+-446	e
+-135	equal
+-783	i
+-2410	j
+-19	k
+0	m
+0	n
+-132	o
++16	p
++777	r
+-3	s
+-70	x
++1	y</pre>
+
+Next steps?
