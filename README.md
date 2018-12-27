@@ -1122,7 +1122,7 @@ We now count the number of hits in each category:
 </pre>
 
 Here is the data visualized:
-<img src="images/barplot.jpeg">
+<img src="images/withretros.jpeg">
 
 And here are the class-codes for reference:
 <img src="images/classcodes.jpg">
@@ -1255,4 +1255,4 @@ wc -l *
   33172 total</strong>
   </pre>
   
-  
+  <img src="images/noretros.jpeg">
