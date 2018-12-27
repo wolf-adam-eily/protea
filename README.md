@@ -1127,4 +1127,132 @@ Here is the data visualized:
 And here are the class-codes for reference:
 <img src="images/classcodes.jpg">
 
-Next steps?
+This procedure was repeated, but this time with possible retrotransposons removed. A wordbank of retrotransposal synonyms was compiled and is as follows:
+
+<pre style="color: silver; background: black;">
+RNH
+pol
+core Int
+gag
+RVT_1
+RT_LTR
+rve
+RNAse_H
+retrotran
+env. retrotransposon
+gag-polypeptide
+reverse-transcriptase
+copia
+gypsy
+</pre>
+
+All of the non-retrotransposal gene names were extracted with the following code:
+
+<pre style="color: silver; background: black;">
+
+grep -v -e "RNH" -e "pol" -e "core Int" -e "gag" -e "RVT_1" -e "RT_LTR" -e "rve" -e "RNAse_H" -e "retrotran" -e "env. retrotransposon" -e "gag-polypeptide" -e "reverse-transcriptase" -e "copia" -e "gypsy" \
+/UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/functional_annotation_with_entap/entap_out/all_annotated.tsv >> non_retros
+
+</pre>
+
+There are 21805 non-retrotransposal genes:
+
+<pre style="color: silver; background: black;"> wc -l non_retros
+<strong>21805</strong>
+
+Now we want to extract the gene lines from the `BRAKER` gff3. To do that we do:
+
+<pre style="color: silver; background: black;">cp non_retros non_retros_copy
+#remove isoform tags from gene names, but first make sure there are no third isoforms
+
+grep -c "\.3" non_retros
+<strong>no output</strong>
+
+grep -c "\.2" non_retros
+<strong>914</strong>
+
+#output from all other numbers is empty
+
+#now remove isoform tags from gene names
+
+sed -i 's/\.2//g; s/^/ID=//g; s/$/;/g' non_retros
+
+head non_retros
+<strong>ID=Query Seq;
+ID=g22351;
+ID=g2427;
+ID=g24770;
+ID=g64;
+ID=g23106;</strong></pre>
+
+Notice that now if we `grep` these patterns we will only extract the gene lines.
+
+<pre style="color: silver; background: black;">
+grep -fF non_retros augustus.hints.gff3 >> non_retros_genes.gff3</pre>
+
+Now we need to extract the CDS.
+
+<pre style="color: silver; background: black;">
+sed -i 's/$/\.t1/g' non_retros_copy
+
+#now fix those for the second isoform
+sed -i 's/$\.t2\.t1/\.t2/g' non_retros_copy
+
+#now extract lines matching these patterns
+
+grep -fF no_retros_copy augustus.hints.gff3 >> non_retros_transcripts
+
+grep "CDS" non_retros_transcripts >> non_retros_CDS</pre>
+
+Now we need to combine these and order them:
+
+<pre style="color: silver; background: black;">
+cat non_retros_cds non_retros_genes >> non_retros_cds_and_genes
+sed -i 's/gene/BEFORE/g' non_retros_cds_and_genes
+#this is done so that we can place the genes before the cds
+
+sort -k1,1 -k7,7 -k4n,4n -k3,3 -k5n,5n non_retros_cds_and_genes >> non_retros.gff3
+sed -i 's/BEFORE/gene/g' non_retros.gff3</pre>
+
+We are now ready to use `gffcompare`:
+<pre style="color: silver; background: black;">
+gffcompare -r non_retros.gff3 -R -Q -s /UCHC/LABS/Wegrzyn/proteaBraker/braker/protea/wolfo_analysis/masked_genome/genome.fasta.fai -o gffcomp_no_retros -V for_comp_protea_gmap.gff3
+mkdir gffcomp_no_retros
+mv gffcomp_no* gffcomp_no_retros
+cd gffcomp_no_retros
+mkdir gffout
+mv gff* gffout
+awk '$4=="="{print $0}' gffout/*tracking > equal
+awk '$4=="c"{print $0}' gffout/*tracking > c
+awk '$4=="k"{print $0}' gffout/*tracking > k
+awk '$4=="m"{print $0}' gffout/*tracking > m
+awk '$4=="n"{print $0}' gffout/*tracking > n
+awk '$4=="j"{print $0}' gffout/*tracking > j
+awk '$4=="e"{print $0}' gffout/*tracking > e
+awk '$4=="o"{print $0}' gffout/*tracking > o
+awk '$4=="s"{print $0}' gffout/*tracking > s
+awk '$4=="x"{print $0}' gffout/*tracking > x
+awk '$4=="i"{print $0}' gffout/*tracking > i
+awk '$4=="y"{print $0}' gffout/*tracking > y
+awk '$4=="p"{print $0}' gffout/*tracking > p
+awk '$4=="r"{print $0}' gffout/*tracking > r
+wc -l *
+<strong>
+  13421 c
+   2216 e
+   2582 equal
+   2422 i
+   9362 j
+    120 k
+      0 m
+      0 n
+   1078 o
+    242 p
+   1188 r
+      7 s
+    522 x
+     12 y
+  33172 total</strong>
+  </pre>
+  
+  
