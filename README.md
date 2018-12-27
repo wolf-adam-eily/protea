@@ -1158,7 +1158,7 @@ grep -v -e "RNH" -e "pol" -e "core Int" -e "gag" -e "RVT_1" -e "RT_LTR" -e "rve"
 There are 21805 non-retrotransposal genes:
 
 <pre style="color: silver; background: black;"> wc -l non_retros
-<strong>21805</strong>
+<strong>21805</strong></pre>
 
 Now we want to extract the gene lines from the `BRAKER` gff3. To do that we do:
 
